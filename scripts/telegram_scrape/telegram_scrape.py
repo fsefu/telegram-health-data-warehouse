@@ -231,6 +231,7 @@ class TelegramScraper:
             "post_id",
             "channel_name",
             "channel_username",
+            "author",
             "message_text",
             "views",
             "timestamp",
@@ -259,7 +260,7 @@ if __name__ == "__main__":
     # Array of Telegram usernames
     telegram_usernames = ["EAHCI", "lobelia4cosmetics", "yetenaweg", "DoctorsET"]
     # telegram_usernames = ["EAHCI"]
-
+    total_post_count = 0
     for username in telegram_usernames:
         scraper = TelegramScraper(username)  # Pass each username individually
         post_info = scraper.get_largest_post_number_and_channel_name()
@@ -276,3 +277,5 @@ if __name__ == "__main__":
                     result["source"] = "Telegram"
                     if result:
                         scraper.save_to_csv(result)
+                        total_post_count += 1
+                        print("total: ", total_post_count)
