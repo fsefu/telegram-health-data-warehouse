@@ -186,7 +186,7 @@ class TelegramImageScrape:
             # Return None if no matching post was found
             return None
 
-    def save_to_csv(self, data, file_name="../../data/telegram_data.csv"):
+    def save_to_csv(self, data, file_name="../../data/telegram_image_data.csv"):
         """
         Save scraped data to a CSV file.
         Args:
@@ -224,8 +224,7 @@ class TelegramImageScrape:
 # Example usage:
 if __name__ == "__main__":
     # Array of Telegram usernames
-    # telegram_usernames = ["EAHCI", "lobelia4cosmetics", "yetenaweg", "DoctorsET"]
-    telegram_usernames = ["EAHCI"]
+    telegram_usernames = ["CheMed123"]
 
     for username in telegram_usernames:
         scraper = TelegramImageScrape(username)  # Pass each username individually
