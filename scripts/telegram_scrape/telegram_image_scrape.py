@@ -6,7 +6,7 @@ import re  # For extracting numerical parts from the post IDs
 import csv  # For saving data to CSV
 
 
-class TelegramScraper:
+class TelegramImageScrape:
     def __init__(self, telegram_username):
         # Initialize the class with a single Telegram username
         self.telegram_username = telegram_username
@@ -149,39 +149,6 @@ class TelegramScraper:
             # Initialize an empty dictionary to store the scraped data
             scraped_data = {}
             # Find the div with class 'tgme_widget_message_text js-message_text before_footer'
-            message_div = post_container.find("div", class_="tgme_widget_message_text")
-            if message_div:
-
-                # Remove emoji tags
-                for emoji in message_div.find_all("i", class_="emoji"):
-                    emoji.decompose()
-
-                # Extract the cleaned text
-                message_text = message_div.get_text(strip=True)
-                scraped_data["message_text"] = message_text
-            else:
-                print("no message div")
-            # Extract view count
-            views_span = post_container.find("span", class_="tgme_widget_message_views")
-            if views_span:
-                scraped_data["views"] = views_span.get_text(strip=True)
-
-            # Extract author and timestamp
-            message_meta = post_container.find(
-                "span", class_="tgme_widget_message_meta"
-            )
-            if message_meta:
-                author = message_meta.find(
-                    "span", class_="tgme_widget_message_from_author"
-                )
-                timestamp = message_meta.find("time")
-
-                if author:
-                    scraped_data["author"] = author.get_text(strip=True)
-
-                if timestamp:
-                    scraped_data["timestamp"] = timestamp.get("datetime")
-
             # Extract image URL if present
             # Extract image URLs if present
             image_wraps = post_container.find_all(
@@ -257,11 +224,11 @@ class TelegramScraper:
 # Example usage:
 if __name__ == "__main__":
     # Array of Telegram usernames
-    telegram_usernames = ["EAHCI", "lobelia4cosmetics", "yetenaweg", "DoctorsET"]
-    # telegram_usernames = ["EAHCI"]
+    # telegram_usernames = ["EAHCI", "lobelia4cosmetics", "yetenaweg", "DoctorsET"]
+    telegram_usernames = ["EAHCI"]
 
     for username in telegram_usernames:
-        scraper = TelegramScraper(username)  # Pass each username individually
+        scraper = TelegramImageScrape(username)  # Pass each username individually
         post_info = scraper.get_largest_post_number_and_channel_name()
 
         # print(f"Largest post for {username}: {largest_post}")
