@@ -21,7 +21,6 @@ class DataCleaning:
         """Replace missing 'views' values with the average of five rows above and below."""
         logging.info("Filling missing 'views' values with average of neighbors...")
         # Ensure 'views' is numeric (handle cases like '2.0K' by converting them to actual numbers)
-        # Assuming self.raw_data["views"] contains the views column
         self.raw_data["views"] = (
             self.raw_data["views"]
             .replace({"K": "e3", "M": "e6"}, regex=True)  # Convert K and M suffixes
@@ -54,18 +53,26 @@ class DataCleaning:
             )
         return self.raw_data
 
+    def replace_nan_with_empty_array(self, columns):
+        """Replace NaN values in specified columns with an empty array `[]`."""
+        for column in columns:
+            if column in self.raw_data.columns:
+                self.raw_data[column] = self.raw_data[column].apply(
+                    lambda x: [] if pd.isna(x) else x
+                )
+
     def clean_data(self):
         """Run all data cleaning steps."""
         self.raw_data = self.remove_unwanted_rows()
         self.raw_data = self.fill_views_with_average()
         self.raw_data = self.standardize_formats()
-        self.raw_data = self.raw_data.drop(columns=["author"])
+
+        # Replace NaN in 'image_urls' and 'image_paths' with empty arrays
+        self.replace_nan_with_empty_array(["image_urls", "image_paths"])
+
+        # Drop the 'author' column if it exists
+        if "author" in self.raw_data.columns:
+            self.raw_data = self.raw_data.drop(columns=["author"])
 
         logging.info("Data cleaned successfully.")
         return self.raw_data
-
-
-# Example usage
-# raw_data = pd.read_csv('your_data_file.csv')
-# cleaner = DataCleaning(raw_data)
-# cleaned_data = cleaner.clean_data()
