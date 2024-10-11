@@ -47,10 +47,16 @@ class DatabaseConnection:
     def get_cursor(self):
         """Returns a cursor for executing database queries."""
         if not self.conn:
-            self.connect()
+            self.connect()  # Ensure connection is established
         return self.conn.cursor()
 
     def commit(self):
         """Commits the current transaction."""
         if self.conn:
             self.conn.commit()
+
+    def rollback(self):
+        """Rolls back the current transaction in case of an error."""
+        if self.conn:
+            self.conn.rollback()
+            logging.warning("Transaction rolled back.")
