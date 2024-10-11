@@ -113,3 +113,7 @@ node_modules/
 # Config files for environments
 .env
 tr.py
+
+target/
+dbt_packages/
+logs/
