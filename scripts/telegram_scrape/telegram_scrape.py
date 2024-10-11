@@ -85,13 +85,18 @@ class TelegramScraper:
         # Scrape the posts
         posts = self.scrape_data_posts()
 
-        if not posts:
+        if not posts or not posts.get("post_ids"):
+            print(f"No posts found for channel: {self.telegram_username}")
             return None
 
         # Extract the numerical part of the post IDs and convert to integers
         post_numbers = [
             int(re.search(r"/(\d+)$", post).group(1)) for post in posts.get("post_ids")
         ]
+
+        if not post_numbers:
+            print(f"No valid post numbers found for channel: {self.telegram_username}")
+            return None
 
         # Find and return the largest post number
         return {"largest": max(post_numbers), "channel_name": posts.get("channel_name")}
@@ -253,6 +258,25 @@ class TelegramScraper:
 
             # Write the row of data
             writer.writerow(data)
+            
+def load_scraped_posts(file_name="../../data/telegram_data.csv"):
+    """
+    Load previously scraped post_ids from the CSV file.
+
+    Args:
+        file_name (str): The CSV file name.
+
+    Returns:
+        set: A set of post_ids that have already been scraped.
+    """
+    scraped_posts = set()
+
+    if os.path.exists(file_name):
+        with open(file_name, mode="r", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                scraped_posts.add(row["post_id"])  # Add post_id to the set
+    return scraped_posts
 
 
 # Example usage:
@@ -261,6 +285,9 @@ if __name__ == "__main__":
     telegram_usernames = ["EAHCI", "lobelia4cosmetics", "yetenaweg", "DoctorsET"]
     # telegram_usernames = ["EAHCI"]
     total_post_count = 0
+    # Load previously scraped post IDs
+    scraped_post_ids = load_scraped_posts()
+
     for username in telegram_usernames:
         scraper = TelegramScraper(username)  # Pass each username individually
         post_info = scraper.get_largest_post_number_and_channel_name()
@@ -268,10 +295,15 @@ if __name__ == "__main__":
         # print(f"Largest post for {username}: {largest_post}")
         if post_info:
             for i in range(1, post_info.get("largest")):
+                 # Skip if post_id has already been scraped
+                post_id=f"{username}_{i}"
+                if post_id in scraped_post_ids:
+                    print(f"Skipping already scraped post: {post_id}")
+                    continue
                 result = scraper.scrape_post_content(username, i)
                 print("result: ", result)
                 if result:
-                    result["post_id"] = f"{username}_{i}"
+                    result["post_id"] = post_id
                     result["channel_name"] = f'{post_info.get("channel_name")}'
                     result["channel_username"] = f"{username}"
                     result["source"] = "Telegram"
