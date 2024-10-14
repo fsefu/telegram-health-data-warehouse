@@ -113,7 +113,9 @@ node_modules/
 # Config files for environments
 .env
 tr.py
+tr.ipynb
 
 target/
 dbt_packages/
 logs/
+
