@@ -22,8 +22,8 @@ class DatabaseHandler:
             for _, row in df.iterrows():
                 cursor.execute(
                     """
-                    INSERT INTO object_detections (image_name, class_name, confidence, x_min, y_min, x_max, y_max, detection_time)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+                    INSERT INTO detected_objects (image_name, class_name, confidence, x_min, y_min, x_max, y_max, detection_time, save_path )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
                     """,
                     (
                         row["image_name"],
@@ -34,6 +34,7 @@ class DatabaseHandler:
                         row["x_max"],
                         row["y_max"],
                         row["detection_time"],
+                        row["save_path"],
                     ),
                 )
 
